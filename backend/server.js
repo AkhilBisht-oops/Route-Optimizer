@@ -18,6 +18,9 @@ const newsletterRoutes = require('./routes/newsletter');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust first proxy (Render/Vercel)
+app.set('trust proxy', 1);
+
 // Debug middleware to see all requests
 app.use((req, res, next) => {
   console.log(`📍 ${req.method} ${req.path}`);
