@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "http://localhost:5000/api";
 
 export default function AdminLogin({ onBack }) {
   const { login, loginWithToken, isAuthenticated } = useAuth();
@@ -17,7 +17,13 @@ export default function AdminLogin({ onBack }) {
 
   useEffect(() => {
     const handleOAuthMessage = (event) => {
-      if (event.origin !== "http://localhost:5000" && event.origin !== window.location.origin) return;
+      const expectedOrigins = [
+        "http://localhost:5000",
+        import.meta.env.VITE_API_URL,
+        window.location.origin,
+      ].filter(Boolean);
+      
+      if (!expectedOrigins.includes(event.origin)) return;
       if (!event.data || !event.data.type) return;
 
       if (event.data.type === "OAUTH_SUCCESS") {
@@ -48,7 +54,7 @@ export default function AdminLogin({ onBack }) {
     const top = window.screenY + (window.outerHeight - height) / 2;
 
     const popup = window.open(
-      `http://localhost:5000/api/oauth/${providerPath}`,
+      `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/oauth/${providerPath}`,
       `${provider} Login`,
       `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`
     );

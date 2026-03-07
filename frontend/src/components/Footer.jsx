@@ -29,8 +29,9 @@ export default function Footer({ onLinkClick }) {
       return;
     }
 
+    const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "http://localhost:5000/api";
     try {
-      const response = await fetch('http://localhost:5000/api/newsletter/subscribe', {
+      const response = await fetch(`${API_BASE}/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

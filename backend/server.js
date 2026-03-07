@@ -29,7 +29,8 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
-    process.env.CLIENT_URL
+    process.env.CLIENT_URL,
+    'https://route-optimizer-frontend.vercel.app', // Example fallback
   ].filter(Boolean),
   credentials: true,
   exposedHeaders: ['Authorization']
@@ -40,10 +41,17 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "http://localhost:5173", "http://localhost:5000"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://use.fontawesome.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://use.fontawesome.com"],
+      imgSrc: ["'self'", "data:", "https:", "http:"],
+      connectSrc: [
+        "'self'", 
+        "http://localhost:5173", 
+        "http://localhost:5000", 
+        process.env.CLIENT_URL, 
+        process.env.SERVER_URL
+      ].filter(Boolean),
     },
   },
   crossOriginEmbedderPolicy: false,
