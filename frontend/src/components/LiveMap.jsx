@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getStationInfo, markMachineFixed, isMajorStation } from '../utils/stationInfo';
 import { searchAll } from '../utils/routeSearch';
+import delhiMetroLines from '../data/metroData';
 
 const CATEGORY_ICONS = {
   station: 'fas fa-subway',

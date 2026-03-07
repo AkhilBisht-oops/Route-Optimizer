@@ -62,14 +62,31 @@ function App() {
 
     if (token) {
       console.log("Token found in URL, performing login");
-      const result = loginWithToken(token);
+      try {
+        const result = loginWithToken(token);
 
-      if (result.success && isPopup === 'true') {
-        console.log("Login successful in popup, closing window");
-        setTimeout(() => window.close(), 1000);
-      } else if (result.success) {
-        // Clear URL params
-        window.history.replaceState({}, document.title, window.location.pathname);
+        if (result.success && (isPopup === 'true' || window.name?.includes('Login'))) {
+          console.log("Login successful in popup, attempting to close window...");
+          // Try to notify opener if possible (same-origin only)
+          try {
+            if (window.opener && !window.opener.closed) {
+              window.opener.postMessage({ type: 'OAUTH_SUCCESS', token }, window.location.origin);
+            }
+          } catch (e) {
+            console.log("Could not postMessage to opener (likely cross-origin)", e);
+          }
+          
+          // Close after a short delay for visibility
+          setTimeout(() => {
+            console.log("Closing window now");
+            window.close();
+          }, 1500);
+        } else if (result.success) {
+          // Clear URL params for main window
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      } catch (err) {
+        console.error("Token login failed:", err);
       }
     }
   }, [loginWithToken]);
@@ -110,13 +127,21 @@ function App() {
   if (new URLSearchParams(window.location.search).get('isPopup') === 'true') {
     return (
       <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center text-white p-6 text-center">
-        <div className="space-y-6">
-          <div className="w-20 h-20 bg-blue-600/10 rounded-full flex items-center justify-center mx-auto border border-blue-500/20">
-            <i className="fas fa-subway text-4xl text-blue-500"></i>
+        <div className="max-w-sm w-full bg-slate-900/50 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-2xl">
+          <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/30">
+            <i className="fas fa-check text-emerald-500 text-2xl"></i>
           </div>
-          <h2 className="text-2xl font-black tracking-tight font-display">AUTHENTICATION COMPLETE</h2>
-          <p className="text-gray-400 font-medium">Finalizing secure session and returning to system...</p>
-          <div className="w-10 h-10 border-2 border-blue-500 border-t-white rounded-full animate-spin mx-auto"></div>
+          <h1 className="text-2xl font-bold mb-2">Authentication Successful</h1>
+          <p className="text-slate-400 mb-8">You have been logged in. This window will close automatically shortly.</p>
+          <div className="flex justify-center">
+            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+          <button 
+            onClick={() => window.close()}
+            className="mt-8 text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+          >
+            Click here if window doesn't close
+          </button>
         </div>
       </div>
     );

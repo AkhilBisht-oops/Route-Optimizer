@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const FALLBACK_CLIENT_URL = 'https://route-optimizer-frontend.vercel.app'; // Update with actual production URL if known
 
 // Helper: generate JWT and send it to the frontend via postMessage
 function handleOAuthCallback(req, res) {
@@ -97,10 +98,13 @@ function getCallbackHTML(token, error, user) {
                 console.log("Checking for opener...");
                 if (!window.opener) {
                     console.log("No opener found - redirecting to app with token fallback");
+                    // Try to use CLIENT_URL, then FALLBACK, then origin as last resort
+                    const targetUrl = clientUrl || FALLBACK_CLIENT_URL || window.location.origin;
+                    
                     if (token) {
-                        window.location.href = clientUrl + '/?token=' + encodeURIComponent(token) + '&isPopup=true';
+                        window.location.href = targetUrl + '/?token=' + encodeURIComponent(token) + '&isPopup=true';
                     } else {
-                        window.location.href = clientUrl + '/?error=' + encodeURIComponent(error || 'auth_failed') + '&isPopup=true';
+                        window.location.href = targetUrl + '/?error=' + encodeURIComponent(error || 'auth_failed') + '&isPopup=true';
                     }
                     return;
                 }

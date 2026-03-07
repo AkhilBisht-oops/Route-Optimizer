@@ -14,23 +14,38 @@ export default function AdminLogin({ onBack }) {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const authRef = useRef(isAuthenticated);
+
+  // Update ref whenever isAuthenticated changes
+  useEffect(() => {
+    authRef.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const handleOAuthMessage = (event) => {
+      // Relaxed origin check for local dev and production
       const expectedOrigins = [
         "http://localhost:5000",
+        "http://localhost:5173",
+        "http://localhost:5174",
         import.meta.env.VITE_API_URL,
         window.location.origin,
-      ].filter(Boolean);
+      ].map(o => o?.replace(/\/$/, '')).filter(Boolean);
       
-      if (!expectedOrigins.includes(event.origin)) return;
+      const eventOrigin = event.origin.replace(/\/$/, '');
+      if (!expectedOrigins.includes(eventOrigin) && event.origin !== '*') {
+        console.log("Ignored message from origin:", event.origin);
+        return;
+      }
+
       if (!event.data || !event.data.type) return;
 
       if (event.data.type === "OAUTH_SUCCESS") {
+        console.log("OAuth Success received!");
         loginWithToken(event.data.token);
-        setSuccess(`Welcome back, ${event.data.user?.name || "User"}!`);
+        setSuccess(`Welcome back! Authenticating...`);
         setLoading(false);
-        setTimeout(() => { window.location.href = "/"; }, 800);
+        // Success state will be handled by authRef in the interval
       }
 
       if (event.data.type === "OAUTH_ERROR") {
@@ -68,17 +83,20 @@ export default function AdminLogin({ onBack }) {
     const checkClosed = setInterval(() => {
       if (popup.closed) {
         clearInterval(checkClosed);
+        // Small delay to let postMessage finish processing
         setTimeout(() => {
-          setLoading(prevLoading => {
-            if (prevLoading && !isAuthenticated) {
-              setError("Login cancelled");
-              return false;
-            }
-            return false;
-          });
-        }, 300);
+          if (!authRef.current) {
+            setLoading(false);
+            setError("Login cancelled or failed");
+          } else {
+            // Already logged in via message
+            setLoading(false);
+            setSuccess("Login successful!");
+            setTimeout(() => { window.location.href = "/"; }, 500);
+          }
+        }, 500);
       }
-    }, 500);
+    }, 800);
   };
 
   const handleLogin = async (e) => {
