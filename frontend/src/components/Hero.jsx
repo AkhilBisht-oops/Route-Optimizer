@@ -208,7 +208,7 @@ export default function Hero({
 
               {/* Button */}
               <button
-                onClick={onFindRoute}
+                onClick={() => onFindRoute({ fastest, cheapest, lessWalking })}
                 disabled={loading}
                 className="flex items-center justify-center gap-2
                            px-8 py-3 rounded-xl font-medium text-white

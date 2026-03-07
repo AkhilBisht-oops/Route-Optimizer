@@ -774,7 +774,7 @@ const MetroMap = ({
   const toRef = useRef(null);
 
   const [zoomLevel, setZoomLevel] = useState(12);
-  const [activeLine, setActiveLine] = useState('red-line');
+  const [activeLine, setActiveLine] = useState(null);
   const [showAllLines, setShowAllLines] = useState(true);
   const [showStationNames, setShowStationNames] = useState(false);
   const [filterType, setFilterType] = useState('all');
@@ -789,8 +789,9 @@ const MetroMap = ({
   const [showToDropdown, setShowToDropdown] = useState(false);
   const [plannerExpanded, setPlannerExpanded] = useState(true);
   const [options, setOptions] = useState({
-    shortest: true,
-    minInterchange: false
+    fastest: true,
+    cheapest: false,
+    lessWalking: false
   });
 
   // Close dropdowns on outside click
@@ -1081,18 +1082,25 @@ const MetroMap = ({
                     <div className="text-[11px] font-bold text-sky-700 uppercase tracking-wider ml-1 mb-2">Advanced Filter</div>
                     <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={() => setOptions(o => ({ ...o, shortest: !o.shortest }))}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.shortest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                        onClick={() => setOptions(o => ({ ...o, fastest: !o.fastest }))}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.fastest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
                       >
-                        <span className="text-lg">📍</span>
-                        <span className="text-[10px] font-bold">Shortest Route</span>
+                        <span className="text-lg">⚡</span>
+                        <span className="text-[10px] font-bold">Fastest</span>
                       </button>
                       <button
-                        onClick={() => setOptions(o => ({ ...o, minInterchange: !o.minInterchange }))}
-                        className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.minInterchange ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                        onClick={() => setOptions(o => ({ ...o, cheapest: !o.cheapest }))}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.cheapest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                      >
+                        <span className="text-lg">💰</span>
+                        <span className="text-[10px] font-bold">Cheapest</span>
+                      </button>
+                      <button
+                        onClick={() => setOptions(o => ({ ...o, lessWalking: !o.lessWalking }))}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.lessWalking ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
                       >
                         <span className="text-lg">🔄</span>
-                        <span className="text-[10px] font-bold">Min. Interchange</span>
+                        <span className="text-[10px] font-bold">Less Walking</span>
                       </button>
                     </div>
                   </div>
@@ -1105,13 +1113,13 @@ const MetroMap = ({
                     >
                       Clear
                     </button>
-                    <button
-                      onClick={onFindRoute}
-                      disabled={loading}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 active:scale-95 border border-white/10"
-                    >
-                      {loading ? 'CALCULATING...' : 'SHOW OPTIMAL VECTOR'}
-                    </button>
+                      <button
+                        onClick={() => onFindRoute(undefined, undefined, options)}
+                        disabled={loading}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-4 rounded-2xl text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 active:scale-95 border border-white/10"
+                      >
+                        {loading ? 'CALCULATING...' : 'SHOW OPTIMAL VECTOR'}
+                      </button>
                   </div>
                 </div>
               )}
@@ -1129,7 +1137,7 @@ const MetroMap = ({
             >
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
 
               {/* DMRC-style Plan Your Journey Overlay */}
@@ -1225,18 +1233,25 @@ const MetroMap = ({
                         <div className="text-[11px] font-bold text-sky-700 uppercase tracking-wider ml-1 mb-2">Advanced Filter</div>
                         <div className="grid grid-cols-2 gap-2">
                           <button
-                            onClick={() => setOptions(o => ({ ...o, shortest: !o.shortest }))}
-                            className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.shortest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                            onClick={() => setOptions(o => ({ ...o, fastest: !o.fastest }))}
+                            className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.fastest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
                           >
-                            <span className="text-lg">📍</span>
-                            <span className="text-[10px] font-bold">Shortest Route</span>
+                            <span className="text-lg">⚡</span>
+                            <span className="text-[10px] font-bold">Fastest</span>
                           </button>
                           <button
-                            onClick={() => setOptions(o => ({ ...o, minInterchange: !o.minInterchange }))}
-                            className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.minInterchange ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                            onClick={() => setOptions(o => ({ ...o, cheapest: !o.cheapest }))}
+                            className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.cheapest ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
+                          >
+                            <span className="text-lg">💰</span>
+                            <span className="text-[10px] font-bold">Cheapest</span>
+                          </button>
+                          <button
+                            onClick={() => setOptions(o => ({ ...o, lessWalking: !o.lessWalking }))}
+                            className={`flex flex-col items-center gap-1 p-2 rounded-xl border transition-all ${options.lessWalking ? 'bg-sky-100 border-sky-200 text-sky-800' : 'bg-white border-gray-100 text-gray-400 hover:border-sky-100'}`}
                           >
                             <span className="text-lg">🔄</span>
-                            <span className="text-[10px] font-bold">Min. Interchange</span>
+                            <span className="text-[10px] font-bold">Less Walking</span>
                           </button>
                         </div>
                       </div>
@@ -1250,7 +1265,7 @@ const MetroMap = ({
                           Reset
                         </button>
                         <button
-                          onClick={onFindRoute}
+                          onClick={() => onFindRoute(undefined, undefined, options)}
                           disabled={loading}
                           className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl text-sm transition-all shadow-lg shadow-red-200 disabled:opacity-50"
                         >
@@ -1269,16 +1284,16 @@ const MetroMap = ({
                   <Polyline
                     positions={searchedRoute.path.map(s => s.coords)}
                     pathOptions={{
-                      color: '#00ff88',
+                      color: '#6366f1',
                       weight: 12,
-                      opacity: 0.25,
+                      opacity: 0.15,
                     }}
                   />
                   {/* Main highlight polyline */}
                   <Polyline
                     positions={searchedRoute.path.map(s => s.coords)}
                     pathOptions={{
-                      color: '#00ff88',
+                      color: '#6366f1',
                       weight: 6,
                       opacity: 0.9,
                       dashArray: '12, 8',

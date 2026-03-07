@@ -42,13 +42,13 @@ function App() {
   const pendingActionRef = useRef(null);
 
   // Guard: if not logged in, show login modal instead of performing the action
-  const requireAuth = useCallback((action) => {
+  const requireAuth = useCallback((action, ...args) => {
     if (!isAuthenticated) {
-      pendingActionRef.current = action;
+      pendingActionRef.current = () => action(...args);
       setShowLoginModal(true);
       return;
     }
-    action();
+    action(...args);
   }, [isAuthenticated]);
 
   const mapRef = useRef(null);
@@ -122,7 +122,7 @@ function App() {
     );
   }
 
-  const findRoute = (overrideFrom, overrideTo) => {
+  const findRoute = (overrideFrom, overrideTo, options = {}) => {
     const activeFrom = overrideFrom || from;
     const activeTo = overrideTo || to;
 
@@ -146,7 +146,7 @@ function App() {
 
       setPlaceInfo({ from: fromPlace, to: toPlace });
 
-      const result = searchRoute(actualFrom, actualTo);
+      const result = searchRoute(actualFrom, actualTo, options);
       setLoading(false);
 
       if (result) {
@@ -239,7 +239,7 @@ function App() {
         setFrom={setFrom}
         setTo={setTo}
         setTime={setTime}
-        onFindRoute={() => requireAuth(findRoute)}
+        onFindRoute={(opts) => requireAuth(findRoute, undefined, undefined, opts)}
         loading={loading}
         searchError={searchError}
       />
@@ -588,7 +588,7 @@ function App() {
             setFrom={setFrom}
             setTo={setTo}
             setTime={setTime}
-            onFindRoute={findRoute}
+            onFindRoute={(fr, t, opts) => requireAuth(findRoute, fr, t, opts)}
             loading={loading}
           />
         </div>
