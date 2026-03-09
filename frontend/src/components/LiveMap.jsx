@@ -34,8 +34,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Complete Delhi Metro Lines Configuration
-const delhiMetroLines = {
+// Delhi Metro Lines Configuration - imported from ../data/metroData
+// (Using the imported delhiMetroLines)
+const _delhiMetroLinesLocal = {
   // Blue Line
   'blue-line': {
     id: 'blue-line',
