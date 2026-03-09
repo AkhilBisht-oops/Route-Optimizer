@@ -154,8 +154,8 @@ export default function Hero({
                         className="px-4 py-2.5 hover:bg-blue-900/40 cursor-pointer text-left text-gray-200 text-sm border-b border-gray-800 last:border-b-0 transition-colors flex items-center gap-2"
                         onClick={() => selectToStation(item.name)}
                       >
-                        <span>{CATEGORY_ICONS[item.type === 'station' ? 'station' : item.category] || '📍'}</span>
-                        <span>{item.name}</span>
+                        <i className={`text-blue-500 text-[10px] ${CATEGORY_ICONS[item.type === 'station' ? 'station' : item.category] || 'fas fa-location-dot'}`}></i>
+                        <span className="font-bold uppercase tracking-tighter">{item.name}</span>
                         {item.type === 'place' && <span className="text-[10px] text-gray-500 ml-auto">{item.category}</span>}
                       </div>
                     ))}
