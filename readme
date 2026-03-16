@@ -1,0 +1,115 @@
+# 🚇 Route Optimizer - Delhi Transit Companion
+
+A modern, high-performance web application designed to optimize travel across Delhi's vast transit network. Whether you're navigating the Delhi Metro or DTC bus routes, Route Optimizer provides real-time insights, fare comparisons, and optimal pathfinding.
+
+---
+
+## ✨ Key Features
+
+-   **🔍 Multi-Mode Route Search**: Find the most efficient path between any two locations in Delhi using Metro and Bus networks.
+-   **📊 Real-Time Network Comparison**: Compare travel time, fare, and reliability between Metro and DTC buses.
+-   **📈 Station Crowd Monitoring**: View live crowd levels and peak hour indicators for major metro stations.
+-   **💰 Smart Fare Calculator**: Estimate trip costs including interchange penalties and discounts.
+-   **🗺️ Interactive Live Map**: Visualize your route with real-time station highlights and line indicators.
+-   **🔐 Secure Admin Dashboard**: Managed station data and system configurations with OAuth-powered authentication (Google, GitHub, Microsoft).
+-   **🌗 Premium Dark Mode UI**: A sleek, glassmorphic interface designed for clarity and visual excellence.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+-   **Core**: React 19 (Vite)
+-   **Styling**: Tailwind CSS 4, Lucide Icons, FontAwesome
+-   **Maps**: Leaflet & React-Leaflet
+-   **Charts**: Recharts (for crowd analytics)
+-   **Routing**: React Router 7
+-   **State Management**: Context API
+
+### Backend
+-   **Runtime**: Node.js with Express 5
+-   **Database**: MongoDB (Mongoose)
+-   **Security**: Helmet, CORS, Bcrypt.js, Express Validator
+-   **Authentication**: Passport.js (Google, GitHub, Microsoft OAuth 2.0)
+-   **Logging**: Morgan
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/AkhilBisht-oops/Route-Optimizer.git
+cd Route-Optimizer
+```
+
+### 2. Backend Setup
+```bash
+cd backend
+npm install
+```
+Create a `.env` file in the `backend` directory:
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+CLIENT_URL=http://localhost:5173
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+```
+
+### 3. Frontend Setup
+```bash
+cd ../frontend
+npm install
+```
+Create a `.env` file in the `frontend` directory:
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+### 4. Seed Database
+Populate your database with sample Delhi transit data:
+```bash
+cd ../backend
+node seed.js          # Seeds routes
+node createStations.js # Extracts stations from routes
+```
+
+### 5. Run the Application
+**Start Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Start Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+├── backend/
+│   ├── config/          # Database & Passport configuration
+│   ├── controllers/     # API request handlers
+│   ├── models/          # Mongoose schemas
+│   ├── routes/          # API endpoints
+│   ├── seed.js          # Database seeding script
+│   └── server.js        # Entry point
+├── frontend/
+│   ├── src/
+│   │   ├── components/  # Modular UI components
+│   │   ├── context/     # Auth & State context
+│   │   ├── utils/       # Route search logic & helpers
+│   │   └── App.jsx      # Main application hub
+└── README.md            # You are here
+```
+---
+*Built with ❤️ for Delhi Commuters.*
